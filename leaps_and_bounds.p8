@@ -1,6 +1,25 @@
 pico-8 cartridge // http://www.pico-8.com
 version 18
 __lua__
+-- leaps and bounds:
+-- a squirrel game
+-- by matt phillips
+-- introspection games
+-- game off 2019
+
+function _init()
+    
+end
+
+function _update()
+
+end
+
+function _draw()
+    cls()
+    sspr(0, 0, 24, 16, 20, 20)
+end
+
 
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
