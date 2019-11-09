@@ -7,19 +7,120 @@ __lua__
 -- introspection games
 -- game off 2019
 
+-- globals
+local dt, game_objects
+
 function _init()
-    
+    dt = null
+    game_objects = {}
+    make_player('player', 20, 20)
 end
 
 function _update()
-
+    -- update dt value
+    if(dt == null) do
+        local target_fps = stat(8)
+        dt = 1 / target_fps
+    end
+    -- update all game objects
+    local obj
+    for obj in all(game_objects) do
+        obj:update()
+    end
 end
 
 function _draw()
     cls()
-    sspr(0, 0, 24, 16, 20, 20)
+    -- draw all game objects
+    local obj
+    for obj in all(game_objects) do
+        obj:draw()
+    end
 end
 
+-- function that makes the player
+function make_player(name, x, y)
+    local props 
+    props = {
+        width = 12,
+        height = 12,
+        jump = 2,
+        velocity_x = 0,
+        velocity_y = 0,
+        max_velocity_x = 3,
+        min_velocity_x = 0,
+        accel = 20,
+        friction = 0.4,
+        move_x = 0,
+        move_y = 0,
+        grounded = true,
+        can_move = true,
+        moving = false,
+        update = function(self)
+            -- calculate velocity
+            if self.can_move then
+                if btn(0) then
+                    self.moving = true
+					if self.grounded then
+                        self.velocity_x += ((self.accel) * dt) * - 1
+					end
+                    self.facing_left = true
+				end
+                if btn(1) then
+                    self.moving = true
+					if self.grounded then
+                        self.velocity_x += ((self.accel) * dt)
+					end
+                    self.facing_left = false
+				end
+            end
+            if not btn(0) and not btn(1) then
+                self.moving = false
+            end
+
+            -- apply friction
+            if self.velocity_x > 1 then
+                self.velocity_x -= self.friction
+            elseif self.velocity_x < -1 then
+                self.velocity_x += self.friction
+            elseif self.velocity_x > -1 and self.velocity_x < 1 and not self.moving then
+                self.velocity_x = 0
+            end
+
+            -- update position
+            
+            
+        end,
+        draw = function(self)
+            sspr(0, 0, 24, 16, self.x, self.y)
+            print(self.velocity_x)         
+        end
+    }
+    make_game_object(name, x, y, props)
+end
+
+-- function that makes game objects
+function make_game_object(name, x, y, props)
+    local obj
+    obj = {
+        name=name,
+        x=x,
+        y=y,
+        velocity_x=0,
+        velocity_y=0,
+        update=function(self)
+        end,
+        draw=function(self)
+        end
+    }
+    if not(props == nil) then
+        local k, v
+        for k, v in pairs(props) do
+            obj[k] = v
+        end
+    end
+    add(game_objects, obj)
+end
 
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
